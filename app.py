@@ -24,5 +24,3 @@ wildfires_in_california.plot(ax=ax, color='red', alpha=0.7)
 
 ax.set_title("Wildfires Overlayed on California Counties")
 plt.show()
-
-
