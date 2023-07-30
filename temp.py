@@ -86,3 +86,4 @@ california_data.plot(ax=ax, color='white', alpha=0.4)
 
 ax.set_title("California Counties - Temperature Heatmap")
 plt.show()
+
