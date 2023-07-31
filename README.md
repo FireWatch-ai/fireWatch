@@ -1,2 +1,2 @@
 # fireWatch
-Policy based wildfire prevention
+Policy-based wildfire prevention.
