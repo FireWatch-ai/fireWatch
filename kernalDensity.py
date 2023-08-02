@@ -14,7 +14,9 @@ print(wildfire_data.crs)
 # Reproject wildfire_data to a projected CRS
 # Replace 'EPSG:4326' with the appropriate CRS code for your data if needed.
 wildfire_data = wildfire_data.to_crs(california_data.crs)
+wildfire_data = wildfire_data.to_crs(california_data.crs)
 
+print("starting gaussian kernel density estimation ...")
 print("starting gaussian kernel density estimation ...")
 # Convert polygon/multipolygon geometries to their centroids (representative points)
 wildfire_data['centroid'] = wildfire_data.geometry.centroid
@@ -71,11 +73,13 @@ fishnet['color'] = fishnet_colors
 fig, ax = plt.subplots(figsize=(10, 10))
 
 print("plotting")
+print("plotting")
 # Plot California counties data on top of the heatmap.
 california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)
 
 # Plot the heatmap using the density values on top of the California map.
 fishnet.boundary.plot(ax=ax, facecolor=cmap(norm(fishnet['color'])), edgecolor='black', linewidth=0.5)
 
+ax.set_title("Kernel Density Estimation Heatmap of Wildfires in California with Fishnet")
 ax.set_title("Kernel Density Estimation Heatmap of Wildfires in California with Fishnet")
 plt.show()
