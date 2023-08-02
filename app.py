@@ -22,5 +22,6 @@ california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=0.5)
 # Plot filtered wildfires that fall within California
 wildfires_in_california.plot(ax=ax, color='red', alpha=0.7)
 
-ax.set_title("Wildfires Overlayed on California Counties")
+
+ax.set_title("Wildfires Overlayed on California Counties with Fishnet Grid")
 plt.show()
