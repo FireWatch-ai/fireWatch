@@ -8,11 +8,10 @@ from apiExperiment import temp
 california_data = gpd.read_file("./testData/CA_Counties_TIGER2016.geojson")
 
 
+print("fishnet stage 1 loading ...")
 
 bbox = california_data.total_bounds
-print(bbox)
 
-print("fishnet stage 1 loading ...")
 # Create a fishnet grid with smaller cells covering the bounding box of California counties
 cell_size = 50000  # Cell size in meters (25 km = 25000 meters)
 rows = int((bbox[3] - bbox[1]) / cell_size)
@@ -42,23 +41,28 @@ fishnet = gpd.GeoDataFrame({'geometry': grid_polygons}, crs=california_data.crs)
 
 
 temperature_data = []
-for cell_polygon in grid_polygons:
-    new_temp = temp(cell_polygon.centroid.x, cell_polygon.centroid.y)
+fishnet.to_crs(epsg=4326, inplace=True)
+
+for cell_polygon in fishnet['geometry']:
+    centroid = cell_polygon.centroid
+    latitude, longitude = centroid.y, centroid.x  # Note that y is latitude and x is longitude
+
+    new_temp = temp(latitude, longitude)
     print(new_temp.temperature)
     temperature_data.append(new_temp.temperature[1])
-    
+
+fishnet['temperature'] = temperature_data
 
 # Plotting
 fig, ax = plt.subplots(figsize=(10, 10))
 
 print("plotting now ...")
 
-# Plot California counties data with the temperature heatmap
-california_data.plot(ax=ax, column='Temperature', cmap=cmap, edgecolor='black', linewidth=0.5, legend=True, vmin=vmin, vmax=vmax)
-
+cmap = plt.get_cmap('hot_r')
+norm = plt.Normalize(vmin=np.min(temperature_data), vmax=np.max(temperature_data))
 
 # Plot fishnet on top of the map, filling cells with red color
-fishnet.plot(ax=ax,  edgecolor='blue', linewidth=0.1)
+fishnet.plot(ax=ax, facecolor=cmap(norm(fishnet['temperature'])),edgecolor='blue', linewidth=0.1)
 
 ax.set_title("Wildfires Overlayed on California Counties with Smaller Fishnet")
 plt.show()
