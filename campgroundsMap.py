@@ -15,9 +15,6 @@ campground_data_reprojected = campground_data.to_crs(california_data.crs)
 
 # Perform a spatial join to associate wildfires with California counties
 campgrounds_in_california = gpd.sjoin(campground_data_reprojected, california_data, op="within")
-# Perform a spatial join to associate wildfires with California counties
-wildfires_in_california = gpd.sjoin(wildfire_data_reprojected, california_data, op="within")
-
 
 # Calculate the bounding box for California counties
 bbox = california_data.total_bounds
@@ -56,23 +53,21 @@ fishnet_colors = []
 
 # Iterate through the fishnet cells and check if there's any wildfire inside
 for cell_polygon in fishnet['geometry']:
-    # Check if any wildfire intersects with the fishnet cell
     intersecting_campgrounds = campgrounds_in_california[campgrounds_in_california.intersects(cell_polygon)]
 
     if not intersecting_campgrounds.empty:
-        # If there are wildfires inside the cell, color it red
         fishnet_colors.append('green')
     else:
-        # If there are no wildfires inside the cell, color it blue
         fishnet_colors.append('lightgrey')
 
 # Add the 'color' column to the fishnet GeoDataFrame
 fishnet['color'] = fishnet_colors
 
 # Plotting
+print("plotting now ...")
+
 fig, ax = plt.subplots(figsize=(10, 10))
 
-print("plotting now ...")
 
 # Plot California counties data
 california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=0.5)
