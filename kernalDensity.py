@@ -7,33 +7,20 @@ from shapely.geometry import Polygon
 california_data = gpd.read_file("./testData/CA_Counties_TIGER2016.geojson")
 wildfire_data = gpd.read_file("./testData/California_Fire_Perimeters_(all).geojson")
 
-# Check the CRS of both datasets
-print(california_data.crs)
-print(wildfire_data.crs)
-
-# Reproject wildfire_data to a projected CRS
-# Replace 'EPSG:4326' with the appropriate CRS code for your data if needed.
-wildfire_data = wildfire_data.to_crs(california_data.crs)
 wildfire_data = wildfire_data.to_crs(california_data.crs)
 
 print("starting gaussian kernel density estimation ...")
-print("starting gaussian kernel density estimation ...")
-# Convert polygon/multipolygon geometries to their centroids (representative points)
+
 wildfire_data['centroid'] = wildfire_data.geometry.centroid
-
-# Extract coordinates of the representative points (centroids) and stack them into a 2D array.
 wildfire_coords = np.column_stack((wildfire_data['centroid'].x, wildfire_data['centroid'].y))
-
-# Perform kernel density estimation on the wildfire coordinates.
 kde = gaussian_kde(wildfire_coords.T)
+
 
 print("checking fishnet")
 
-# Calculate the bounding box for California counties
 bbox = california_data.total_bounds
 
-# Create a fishnet grid with smaller cells covering the bounding box of California counties
-cell_size = 5000  # Cell size in meters (25 km = 25000 meters)
+cell_size = 5000
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -70,16 +57,14 @@ norm = plt.Normalize(vmin=np.min(fishnet_colors), vmax=np.max(fishnet_colors))
 
 fishnet['color'] = fishnet_colors
 
+print("plotting")
 fig, ax = plt.subplots(figsize=(10, 10))
 
-print("plotting")
-print("plotting")
 # Plot California counties data on top of the heatmap.
 california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)
 
 # Plot the heatmap using the density values on top of the California map.
 fishnet.boundary.plot(ax=ax, facecolor=cmap(norm(fishnet['color'])), edgecolor='black', linewidth=0.5)
 
-ax.set_title("Kernel Density Estimation Heatmap of Wildfires in California with Fishnet")
 ax.set_title("Kernel Density Estimation Heatmap of Wildfires in California with Fishnet")
 plt.show()
