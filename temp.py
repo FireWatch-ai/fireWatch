@@ -3,17 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from shapely.geometry import Polygon
-from apiExperiment import temp
+from shapely.geometry import Point
+from weatherApi import temp
 
 california_data = gpd.read_file("./testData/CA_Counties_TIGER2016.geojson")
-
 
 print("fishnet stage 1 loading ...")
 
 bbox = california_data.total_bounds
 
 # Create a fishnet grid with smaller cells covering the bounding box of California counties
-cell_size = 50000  # Cell size in meters (25 km = 25000 meters)
+cell_size = 5000  # Cell size in meters (25 km = 25000 meters)
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -42,7 +42,7 @@ fishnet = gpd.GeoDataFrame({'geometry': grid_polygons}, crs=california_data.crs)
 
 temperature_data = []
 fishnet.to_crs(epsg=4326, inplace=True)
-
+count = 0
 for cell_polygon in fishnet['geometry']:
     centroid = cell_polygon.centroid
     latitude, longitude = centroid.y, centroid.x  # Note that y is latitude and x is longitude
@@ -50,6 +50,10 @@ for cell_polygon in fishnet['geometry']:
     new_temp = temp(latitude, longitude)
     print(new_temp.temperature)
     temperature_data.append(new_temp.temperature[1])
+    count += 1
+    print(count)
+    
+print("done")
 
 fishnet['temperature'] = temperature_data
 
@@ -61,8 +65,18 @@ print("plotting now ...")
 cmap = plt.get_cmap('hot_r')
 norm = plt.Normalize(vmin=np.min(temperature_data), vmax=np.max(temperature_data))
 
+#covert fishenet to california crs
+fishnet = fishnet.to_crs(california_data.crs)
+
 # Plot fishnet on top of the map, filling cells with red color
-fishnet.plot(ax=ax, facecolor=cmap(norm(fishnet['temperature'])),edgecolor='blue', linewidth=0.1)
+california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)
+
+fishnet.boundary.plot(ax=ax, facecolor=cmap(norm(fishnet['temperature'])),edgecolor='blue', linewidth=0.1)
+
+cax = plt.axes([0.85, 0.2, 0.02, 0.6])  # [left, bottom, width, height]
+cb = plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cax)
+cb.set_label('Temperature in California')
+
 
 ax.set_title("Wildfires Overlayed on California Counties with Smaller Fishnet")
 plt.show()
