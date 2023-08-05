@@ -1,19 +1,27 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import numpy as np
-from scipy.ndimage import gaussian_filter
 from shapely.geometry import Polygon
-from shapely.geometry import Point
-from weatherApi import temp
 
 california_data = gpd.read_file("./testData/CA_Counties_TIGER2016.geojson")
+wildfire_data = gpd.read_file("./testData/NIFC_2023_Wildfire_Perimeters.geojson")
+
+# Check the CRS of both datasets
+print(california_data.crs)
+print(wildfire_data.crs)
+
+# Reproject the wildfire data to match the CRS of California counties data
+wildfire_data_reprojected = wildfire_data.to_crs(california_data.crs)
+
+# Perform a spatial join to associate wildfires with California counties
+wildfires_in_california = gpd.sjoin(wildfire_data_reprojected, california_data, op="within")
+
+# Calculate the bounding box for California counties
+bbox = california_data.total_bounds
+print(bbox)
 
 print("fishnet stage 1 loading ...")
-
-bbox = california_data.total_bounds
-
 # Create a fishnet grid with smaller cells covering the bounding box of California counties
-cell_size = 5000  # Cell size in meters (25 km = 25000 meters)
+cell_size = 25000  # Cell size in meters (25 km = 25000 meters)
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -39,45 +47,35 @@ print("checking fishnet ...")
 # Create a GeoDataFrame from the grid polygons
 fishnet = gpd.GeoDataFrame({'geometry': grid_polygons}, crs=california_data.crs)
 
+# Create a list to store the color for each fishnet cell
+fishnet_colors = []
 
-temperature_data = []
-fishnet.to_crs(epsg=4326, inplace=True)
-count = 0
+# Iterate through the fishnet cells and check if there's any wildfire inside
 for cell_polygon in fishnet['geometry']:
-    centroid = cell_polygon.centroid
-    latitude, longitude = centroid.y, centroid.x  # Note that y is latitude and x is longitude
+    # Check if any wildfire intersects with the fishnet cell
+    intersecting_wildfires = wildfires_in_california[wildfires_in_california.intersects(cell_polygon)]
 
-    new_temp = temp(latitude, longitude)
-    print(new_temp.temperature)
-    temperature_data.append(new_temp.temperature[1])
-    count += 1
-    print(count)
+    if not intersecting_wildfires.empty:
+        # If there are wildfires inside the cell, color it red
+        fishnet_colors.append('red')
+    else:
+        # If there are no wildfires inside the cell, color it blue
+        fishnet_colors.append('lightgrey')
 
-print("done")
-
-fishnet['temperature'] = temperature_data
+# Add the 'color' column to the fishnet GeoDataFrame
+fishnet['color'] = fishnet_colors
 
 # Plotting
 fig, ax = plt.subplots(figsize=(10, 10))
 
 print("plotting now ...")
 
-cmap = plt.get_cmap('hot_r')
-norm = plt.Normalize(vmin=np.min(temperature_data), vmax=np.max(temperature_data))
+# Plot California counties data
+california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=0.5)
 
-#covert fishenet to california crs
-fishnet = fishnet.to_crs(california_data.crs)
 
 # Plot fishnet on top of the map, filling cells with red color
-california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)
-
-fishnet.boundary.plot(ax=ax, facecolor=cmap(norm(fishnet['temperature'])),edgecolor='blue', linewidth=0.1)
-
-cax = plt.axes([0.85, 0.2, 0.02, 0.6])  # [left, bottom, width, height]
-cb = plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cax)
-cb.set_label('Temperature in California')
-
+fishnet.plot(ax=ax, facecolor=fishnet['color'], edgecolor=fishnet['color'], linewidth=0.1)
 
 ax.set_title("Wildfires Overlayed on California Counties with Smaller Fishnet")
 plt.show()
-
