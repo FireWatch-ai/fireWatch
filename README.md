@@ -9,7 +9,13 @@ Here is the intial plotting of wildfires on california, alongside a guassian dis
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/KDECalifornia.png)
 
+# Factors mapping
 
+Right now, we are testing 2 factors, 1 direct (temperature) and 1 neighbor (campgrounds). 
+
+The get temperature we check the center of each fishnet and call on the weatherAPI, normailzing and assinging a color via cmap. This results in
+
+![]
 
 
 
