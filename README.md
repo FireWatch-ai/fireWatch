@@ -29,12 +29,12 @@ for cell_polygon in fishnet['geometry']:
 
 Normailzing and assinging a color via cmap.
 
-![https://github.com/blueishfiend692/fireWatch/blob/master/images/TemperatureCalifornia.png]
+![][https://github.com/blueishfiend692/fireWatch/blob/master/images/TemperatureCalifornia.png]
 
 For the campgrounds factor, the campground is plotted and then the nearst distance is recorded and mapped via a cmap
 
 
-![https://github.com/blueishfiend692/fireWatch/blob/master/images/Campgrounds%20Map.png]
+![][https://github.com/blueishfiend692/fireWatch/blob/master/images/Campgrounds%20Map.png]
 
 ```
 for cell_polygon in fishnet['geometry']:
@@ -55,7 +55,7 @@ for cell_polygon in grid_polygons:
 
 ```
 
-![https://github.com/blueishfiend692/fireWatch/blob/master/images/knn%20campgrounds.png]
+![][https://github.com/blueishfiend692/fireWatch/blob/master/images/knn%20campgrounds.png]
 
 
 
