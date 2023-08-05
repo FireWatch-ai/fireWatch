@@ -5,8 +5,10 @@ from scipy.stats import gaussian_kde
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
+from esda import Moran_Local
 from shapely.geometry import Point, Polygon
 from weatherApi import temp
+import libpysal
 
 def distance_between(point1, point2):
     return ((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)**0.5
@@ -33,7 +35,7 @@ print("Creating grid polygons ...")
 
 # Create grid polygons
 bbox = california_data.total_bounds
-cell_size = 100000
+cell_size = 5000
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -106,10 +108,14 @@ for cell_polygon in grid_polygons:
 fishnet['distance'] = fishnet_distance
 fishnet['probability'] = wildfire_probability
 
+w = libpysal.weights.Queen.from_dataframe(fishnet)
+moran_loc_wildfire = Moran_Local(wildfire_probability, w, permutations=999)
+fishnet['local_moran_wildfire'] = moran_loc_wildfire.Is
+
 print("Performing machine learning training ...")
 
-X = fishnet[['distance', 'temperature']].values
-y = fishnet['probability']
+X = fishnet[['distance', 'temperature', 'probability']].values
+y = fishnet['local_moran_wildfire']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05    , random_state=42)
 
@@ -126,23 +132,16 @@ print("R-squared:", r2)
 fishnet['predicted_probability'] = model.predict(X)
 
 print(fishnet.head())
+# print weights
+print("Weights: ", model.coef_)
 
 print("Plotting ...")
 
 cmap = plt.get_cmap('inferno')
 norm = plt.Normalize(vmin=np.min(fishnet['predicted_probability']), vmax=np.max(fishnet['predicted_probability']))
 
-colors = []
-
-for cell_polygon in fishnet['geometry']:
-    centroid_x, centroid_y = cell_polygon.centroid.x, cell_polygon.centroid.y
-
-    intersecting_wildfires = wildfires_in_california_new[wildfires_in_california_new.intersects(cell_polygon)]
-
-    if not intersecting_wildfires.empty:
-        colors.append('red')
-    else:
-        colors.append(cmap(norm(cell_polygon['predicted_probability'])))
+colors = ['red' if not wildfires_in_california_new[wildfires_in_california_new.intersects(polygon)].empty else cmap(norm(probability))
+          for polygon, probability in zip(grid_polygons, fishnet['predicted_probability'])]
 fishnet['color'] = colors
 
 
@@ -150,8 +149,8 @@ fig, ax = plt.subplots(figsize=(10, 10))
 california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)
 fishnet.boundary.plot(ax=ax,
                       facecolor=fishnet['color'],
-                      edgecolor='black',
-                      linewidth=0.5)
+                      edgecolor=fishnet['color'],
+                      linewidth=0.2)
 
 ax.set_title("LR on knn neighbor")
 
