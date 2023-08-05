@@ -57,6 +57,28 @@ for cell_polygon in grid_polygons:
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/knn%20campgrounds.png)
 
+# Local Moran
+
+Applying a local moran helps to reduce noise within the dataset
+
+```
+w = libpysal.weights.Queen.from_dataframe(fishnet)
+moran_loc_wildfire = Moran_Local(wildfire_probability, w, permutations=999)
+fishnet['local_moran_wildfire'] = moran_loc_wildfire.Is
+
+```
+
+Here is the moran overlayed with 2023 wildfires after training 
+
+![](https://github.com/blueishfiend692/fireWatch/blob/master/images/localMoranTest.png)
+
+# Training 
+
+Using the kNN distance, logstical regression on temperature combined with the local moran a heatmap can be generated overlayed 2023 wildfires (not trained on). 
+
+![](https://github.com/blueishfiend692/fireWatch/blob/master/images/V1.0TempCampground%26Moran%4065%25-5000px.png) 
+
+
 
 
 
