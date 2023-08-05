@@ -13,27 +13,25 @@ import libpysal
 def distance_between(point1, point2):
     return ((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)**0.5
 
+max_number = 1000000000000000000000000
+
 print("Starting to read files")
 
-# Read GeoJSON files
 california_data = gpd.read_file("./testData/CA_Counties_TIGER2016.geojson")
 campground_data = gpd.read_file("./testData/Campground Sites.geojson")
 wildfire_data = gpd.read_file("./testData/California_Fire_Perimeters_(all).geojson")
 wildfire_data_new = gpd.read_file("./testData/NIFC_2023_Wildfire_Perimeters.geojson")
 
-# Reproject the wildfire data to match the CRS of California counties data
 campground_data_reprojected = campground_data.to_crs(california_data.crs)
 wildfire_data_reprojected = wildfire_data.to_crs(california_data.crs)
 wildfire_data_new_reprojected = wildfire_data_new.to_crs(california_data.crs)
 
-# Spatial joins
 campgrounds_in_california = gpd.sjoin(campground_data_reprojected, california_data, op="within")
 wildfires_in_california = gpd.sjoin(wildfire_data_reprojected, california_data, op="within")
 wildfires_in_california_new = gpd.sjoin(wildfire_data_new_reprojected, california_data, op="within")
 
 print("Creating grid polygons ...")
 
-# Create grid polygons
 bbox = california_data.total_bounds
 cell_size = 5000
 rows = int((bbox[3] - bbox[1]) / cell_size)
@@ -56,7 +54,6 @@ fishnet = gpd.GeoDataFrame({'geometry': grid_polygons}, crs=california_data.crs)
 
 print("Calculating wildfire probability and temperature ...")
 
-# Calculate wildfire probability and temperature
 wildfire_data_reprojected['centroid'] = wildfire_data_reprojected.geometry.centroid
 wildfire_coords = np.column_stack((wildfire_data_reprojected['centroid'].x, wildfire_data_reprojected['centroid'].y))
 kde = gaussian_kde(wildfire_coords.T)
@@ -97,8 +94,7 @@ for cell_polygon in grid_polygons:
     centroid_x, centroid_y = cell_polygon.centroid.x, cell_polygon.centroid.y
     density_value = kde([centroid_x, centroid_y])[0]
     wildfire_probability.append(density_value)
-    #set distance to largest possible value
-    distance = 1000000000000000000000
+    distance = max_number
 
     for campground in campground_coordinates:
         if distance_between([centroid_x, centroid_y], campground) < distance:
@@ -132,7 +128,6 @@ print("R-squared:", r2)
 fishnet['predicted_probability'] = model.predict(X)
 
 print(fishnet.head())
-# print weights
 print("Weights: ", model.coef_)
 
 print("Plotting ...")
