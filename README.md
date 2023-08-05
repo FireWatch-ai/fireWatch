@@ -1,4 +1,4 @@
-# fireWatch
+# fireWatch ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/wildfireInCalifornia.png)
 Policy-based wildfire prevention. Currently in building out predictive model on using open source data in California. V.01
 
 # Initial fire plotting
