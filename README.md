@@ -56,8 +56,3 @@ for cell_polygon in grid_polygons:
 ```
 
 ![https://github.com/blueishfiend692/fireWatch/blob/master/images/knn%20campgrounds.png]
-
-
-
-
-
