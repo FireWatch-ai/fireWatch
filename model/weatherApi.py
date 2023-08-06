@@ -1,7 +1,7 @@
 import requests
 
 class temp:
-    def __init__(self, x, y):
+    def __init__(self, y, x):
         self.x = x
         self.y = y
         self.temperature = self.main()
@@ -12,14 +12,14 @@ class temp:
             "key": api_key,
             "q": f"{latitude},{longitude}",
             "dt": date,
-            "end_dt": date,  # Same date for the end_dt will get data for the specified date only
-            "hour": 0,       # Hour is set to 0 for getting data for the whole day
+            "end_dt": date,
+            "hour": 0,
             "units": "metric"
         }
 
         try:
             response = requests.get(base_url, params=params)
-            response.raise_for_status()  # Check for any request errors
+            response.raise_for_status()
 
             data = response.json()
             return data
@@ -29,11 +29,10 @@ class temp:
             return None
 
     def main(self):
-        # Replace YOUR_API_KEY with your actual API key from Weatherapi.com
         api_key = "9352563de1bf43599ca193930230308"
-        latitude = self.x  # Replace with your desired latitude
-        longitude = self.y  # Replace with your desired longitude
-        date = "2023-08-05"  # Replace with the desired date in the format "YYYY-MM-DD"
+        latitude = self.x
+        longitude = self.y
+        date = "2023-08-05"
 
         weather_data = self.get_historical_weather(api_key, latitude, longitude, date)
 

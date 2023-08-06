@@ -63,7 +63,7 @@ fishnet.to_crs(epsg=4326, inplace=True)
 count = 0
 for cell_polygon in fishnet['geometry']:
     centroid = cell_polygon.centroid
-    latitude, longitude = centroid.y, centroid.x  # Note that y is latitude and x is longitude
+    latitude, longitude = centroid.y, centroid.x  
 
     new_temp = temp(latitude, longitude)
     print(new_temp.temperature)

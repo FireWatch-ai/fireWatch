@@ -15,16 +15,13 @@ wildfire_data['centroid'] = wildfire_data.geometry.centroid
 wildfire_coords = np.column_stack((wildfire_data['centroid'].x, wildfire_data['centroid'].y))
 kde = gaussian_kde(wildfire_coords.T)
 
-
 print("checking fishnet")
 
 bbox = california_data.total_bounds
-
 cell_size = 5000
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
-# Generate polygons for each cell in the fishnet
 grid_polygons = []
 for x in range(cols):
     for y in range(rows):
@@ -33,7 +30,6 @@ for x in range(cols):
         ymin = bbox[1] + y * cell_size
         ymax = bbox[1] + (y + 1) * cell_size
 
-        # Clip the fishnet cell to the extent of California
         clipped_polygon = Polygon([(max(xmin, bbox[0]), max(ymin, bbox[1])),
                                    (min(xmax, bbox[2]), max(ymin, bbox[1])),
                                    (min(xmax, bbox[2]), min(ymax, bbox[3])),
@@ -46,10 +42,9 @@ fishnet = gpd.GeoDataFrame({'geometry': grid_polygons}, crs=california_data.crs)
 
 print("getting fishnet colors ...")
 fishnet_colors = []
-# Calculate the kernel density value at the centroid of each fishnet cell and store the corresponding color
 for cell_polygon in grid_polygons:
     centroid_x, centroid_y = cell_polygon.centroid.x, cell_polygon.centroid.y
-    density_value = kde([centroid_x, centroid_y])[0]  # The kde function returns an array, we need the first element.
+    density_value = kde([centroid_x, centroid_y])[0]
     fishnet_colors.append(density_value)
 
 cmap = plt.get_cmap('inferno')
@@ -58,12 +53,9 @@ norm = plt.Normalize(vmin=np.min(fishnet_colors), vmax=np.max(fishnet_colors))
 fishnet['color'] = fishnet_colors
 
 print("plotting")
+
 fig, ax = plt.subplots(figsize=(10, 10))
-
-# Plot California counties data on top of the heatmap.
 california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)
-
-# Plot the heatmap using the density values on top of the California map.
 fishnet.boundary.plot(ax=ax, facecolor=cmap(norm(fishnet['color'])), edgecolor='black', linewidth=0.5)
 
 ax.set_title("Kernel Density Estimation Heatmap of Wildfires in California with Fishnet")

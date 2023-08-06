@@ -1,4 +1,3 @@
-
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon

@@ -12,14 +12,7 @@ def distanceBetween (point1, point2):
 california_data = gpd.read_file("./testData/CA_Counties_TIGER2016.geojson")
 campground_data = gpd.read_file("./testData/Campground Sites.geojson")
 
-# Check the CRS of both datasets
-print(california_data.crs)
-print(campground_data.crs)
-
-# Reproject the wildfire data to match the CRS of California counties data
 campground_data_reprojected = campground_data.to_crs(california_data.crs)
-
-# Perform a spatial join to associate wildfires with California counties
 campgrounds_in_california = gpd.sjoin(campground_data_reprojected, california_data, op="within")
 
 print("fishnet stage 1 loading ...")
@@ -73,7 +66,7 @@ fishnet['distance'] = fishnet_distance
 cmap = plt.get_cmap('Greens_r')
 norm = plt.Normalize(vmin=np.min(fishnet_distance), vmax=np.max(fishnet_distance))
 
-# Plotting
+
 print("plotting now ...")
 fig, ax = plt.subplots(figsize=(10, 10))
 
