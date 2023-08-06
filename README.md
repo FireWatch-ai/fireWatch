@@ -80,31 +80,3 @@ Here is the moran overlayed with 2023 wildfires after training
 Using the kNN distance, logstical regression on temperature combined with the local moran a heatmap can be generated overlayed 2023 wildfires (not trained on) - 65% accuracy on 25000 square kilometer cell size.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/V1.0TempCampground%26Moran%4065%25-5000px.png)
-
-
-
-For the campgrounds factor, the campground is plotted and then the nearst distance is recorded and mapped via a cmap
-
-
-![https://github.com/blueishfiend692/fireWatch/blob/master/images/Campgrounds%20Map.png]
-
-```
-for cell_polygon in fishnet['geometry']:
-    centroid_x, centroid_y = cell_polygon.centroid.x, cell_polygon.centroid.y
-
-    intersecting_campgrounds = campgrounds_in_california[campgrounds_in_california.intersects(cell_polygon)]
-    if not intersecting_campgrounds.empty:
-        campground_coordinates.append([centroid_x, centroid_y])
-
-for cell_polygon in grid_polygons:
-    centroid_x, centroid_y = cell_polygon.centroid.x, cell_polygon.centroid.y
-    ...
-    distance = max_number
-    for campground in campground_coordinates:
-        if distance_between([centroid_x, centroid_y], campground) < distance:
-            distance = distance_between([centroid_x, centroid_y], campground)
-    fishnet_distance.append(distance)
-
-```
-
-![https://github.com/blueishfiend692/fireWatch/blob/master/images/knn%20campgrounds.png]
