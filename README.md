@@ -1,9 +1,9 @@
 # FireWatch
-Policy-based wildfire prevention. Currently in building out predictive model on using open source data in California. V.01
+Policy-based wildfire prevention. Currently, we are in the process of building a predictive model using open-source data in California, combining multistage ML models. We hope to incorporate direct factors along with human factors, such as campgrounds, to effectively predict and manage wildfire resources. Version 1.0
 
 # Initial fire plotting
 
-Here is the intial plotting of wildfires on california, alongside a guassian distrubition to create a probailbity, P from 0 < P < 1.
+Here is the initial plotting of wildfires in California, alongside a Gaussian distribution to create a probability, P, where 0 < P < 1.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/wildfireInCalifornia.png)
 
@@ -11,10 +11,9 @@ Here is the intial plotting of wildfires on california, alongside a guassian dis
 
 # Factors mapping
 
-Right now, we are testing 2 factors, 1 direct (temperature) and 1 neighbor (campgrounds).
+Right now, we are building the model using 2 factors: 1 direct (temperature) and 1 neighboring (campgrounds).
 
-The get temperature we check the center of each fishnet and call on the weatherAPI
-
+To obtain temperature data, we check the center of each grid cell and call on the weather API.
 ```
 temperature_data = []
 fishnet.to_crs(epsg=4326, inplace=True)
@@ -27,12 +26,11 @@ for cell_polygon in fishnet['geometry']:
 ...
 ```
 
-Normailzing and assinging a color via cmap.
+Normalizing and assigning a color via cmap.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/TemperatureCalifornia.png)
 
-For the campgrounds factor, the campground is plotted and then the nearst distance is recorded and mapped via a cmap
-
+For the campgrounds factor, the campground is plotted, and then the nearest distance is recorded and mapped via a cmap.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/Campgrounds%20Map.png)
 
@@ -59,7 +57,7 @@ for cell_polygon in grid_polygons:
 
 # Local Moran
 
-Applying a local moran helps to reduce noise within the dataset
+Applying a local Moran helps to reduce noise within the dataset.
 
 ```
 w = libpysal.weights.Queen.from_dataframe(fishnet)
@@ -68,12 +66,12 @@ fishnet['local_moran_wildfire'] = moran_loc_wildfire.Is
 
 ```
 
-Here is the moran overlayed with 2023 wildfires after training
+Here is the Moran overlayed with 2023 wildfires after training.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/localMoranTest.png)
 
 # Training
 
-Using the kNN distance, logstical regression on temperature combined with the local moran a heatmap can be generated overlayed 2023 wildfires (not trained on) - 65% accuracy on 25000 square kilometer cell size.
+Using the kNN distance, logistic regression on temperature combined with the local Moran, a heatmap can be generated overlaying 2023 wildfires (not trained on) - achieving 65% accuracy on a 25000 square kilometer cell size.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/V1.0TempCampground%26Moran%4065%25-5000px.png)
