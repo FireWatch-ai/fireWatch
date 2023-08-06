@@ -1,9 +1,6 @@
-library(datasets)  # Load base packages manually
-
-# Installs pacman ("package manager") if needed
+library(datasets)
 if (!require("pacman")) install.packages("pacman")
 
-# Use pacman to load add-on packages as desired
 pacman::p_load(pacman, caret, lars, tidyverse,sf,RSocrata,viridis,spatstat,spdep,gridExtra, spatialreg)
 
 options(scipen=9999)
@@ -22,8 +19,8 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 nhoods <-
   st_read("https://data.sfgov.org/api/geospatial/p5b7-5n3h?method=export&format=GeoJSON") %>%
   st_transform('ESRI:102642') %>%
-  st_buffer(-1) #to correct some of the digitization errors
-  
+  st_buffer(-1)
+
 
 bound <-
   st_read("C:/Users/vinod/Desktop/City_Boundaries.geojson") %>%
@@ -37,7 +34,7 @@ fishnet <-
   st_make_grid(nhoods, cellsize = 500) %>%
   st_sf() %>%
   mutate(uniqueID = rownames(.)) %>%
-  .[bound,] #return only grid cells in the San Fran boundary
+  .[bound,] 
 
 ggplot() +
   geom_sf(data=fishnet) +
@@ -79,7 +76,7 @@ as.data.frame(fire_KD) %>%
                      option = "magma") +
   labs(title = "Kernel density risk of fires",
        subtitle = "Market St. overlayed") +
-  mapTheme()    
+  mapTheme()
 
 fire_net <-
   dplyr::select(fires17_20) %>%
@@ -174,7 +171,7 @@ ggplot() +
   geom_sf(data = vars_net) +
   geom_sf(data=graf, size=.5) +
   labs(title = "Random sample of 311 graffiti points") +
-  mapTheme()   
+  mapTheme()
 
 vars_net <-
   vars_net %>%
