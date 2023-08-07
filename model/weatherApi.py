@@ -1,7 +1,7 @@
 import requests
 
 class temp:
-    def __init__(self, y, x):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         self.temperature = self.main()
@@ -32,7 +32,7 @@ class temp:
         api_key = "9352563de1bf43599ca193930230308"
         latitude = self.x
         longitude = self.y
-        date = "2023-08-05"
+        date = "2023-08-07"
 
         weather_data = self.get_historical_weather(api_key, latitude, longitude, date)
 
@@ -47,5 +47,4 @@ class temp:
         else:
             print("Weather data not available for the specified date.")
             return None
-
 

@@ -33,7 +33,7 @@ wildfires_in_california_new = gpd.sjoin(wildfire_data_new_reprojected, californi
 print("Creating grid polygons ...")
 
 bbox = california_data.total_bounds
-cell_size = 50000
+cell_size = 5000
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -133,7 +133,7 @@ print("Weights: ", model.coef_)
 print("Plotting ...")
 
 cmap = plt.get_cmap('inferno')
-norm = plt.Normalize(vmin=0, vmax=1)
+norm = plt.Normalize(vmin=np.min(fishnet['predicted_probability']), vmax=np.max(fishnet['predicted_probability']))
 
 colors = ['red' if not wildfires_in_california_new[wildfires_in_california_new.intersects(polygon)].empty else cmap(norm(probability))
           for polygon, probability in zip(grid_polygons, fishnet['predicted_probability'])]
