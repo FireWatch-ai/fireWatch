@@ -9,6 +9,7 @@ from esda import Moran_Local
 from shapely.geometry import Point, Polygon
 from weatherApi import temp
 import libpysal
+from sklearn import preprocessing as pre
 
 def distance_between(point1, point2):
     return ((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)**0.5
@@ -33,7 +34,7 @@ wildfires_in_california_new = gpd.sjoin(wildfire_data_new_reprojected, californi
 print("Creating grid polygons ...")
 
 bbox = california_data.total_bounds
-cell_size = 50000
+cell_size = 5000
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -125,7 +126,8 @@ r2 = r2_score(y_test, y_pred)
 print("Mean Squared Error:", mse)
 print("R-squared:", r2)
 
-fishnet['predicted_probability'] = model.predict(X)
+predictedProbability = model.predict(X).reshape(-1,1)
+fishnet['predicted_probability'] = pre.MinMaxScaler().fit_transform(predictedProbability)
 
 print(fishnet.head())
 print("Weights: ", model.coef_)
@@ -133,7 +135,9 @@ print("Weights: ", model.coef_)
 print("Plotting ...")
 
 cmap = plt.get_cmap('inferno')
-norm = plt.Normalize(vmin=0, vmax=1)
+# normalzie colors linearly from 0 to 1
+norm = plt.Normalize(vmin=np.min(fishnet['predicted_probability']), vmax=np.max(fishnet['predicted_probability']))
+
 
 colors = ['red' if not wildfires_in_california_new[wildfires_in_california_new.intersects(polygon)].empty else cmap(norm(probability))
           for polygon, probability in zip(grid_polygons, fishnet['predicted_probability'])]
