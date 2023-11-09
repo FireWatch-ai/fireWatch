@@ -2,10 +2,6 @@
 
 Policy-based wildfire prevention. Currently, we are in the process of building a predictive model using open-source data in California, combining multistage ML models. We hope to incorporate direct factors along with human factors, such as campgrounds, to effectively predict and manage wildfire resources. Version 1.0
 
-<p align="center">
-  <img src="https://github.com/blueishfiend692/fireWatch/blob/master/images/assets/fireWatchLogo.gif" />
-</p>
-
 # Initial fire plotting
 
 Here is the initial plotting of wildfires in California, alongside a Gaussian distribution to create a probability, P, where 0 < P < 1.
