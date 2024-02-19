@@ -77,6 +77,6 @@ Here is the Moran overlayed with 2023 wildfires after training.
 
 # Training
 
-Using the kNN distance, logistic regression on temperature combined with the local Moran, a heatmap can be generated overlaying 2023 wildfires (not trained on) - achieving 65% accuracy on a 25000 square kilometer cell size.
+Using the kNN distance, logistic regression on temperature combined with the local Moran, a heatmap can be generated overlaying 2023 wildfires (not trained on) - achieving 74% accuracy on a 25000 square kilometer cell size.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/V1.0TempCampground%26Moran%4065%25-5000px.png)
