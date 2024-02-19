@@ -1,6 +1,8 @@
 # FireWatch
 
-![](https://github.com/blueishfiend692/fireWatch/blob/master/images/fireWatch%20logo%20(1).gif)
+<p align="center">
+  <img src="https://github.com/blueishfiend692/fireWatch/blob/master/images/fireWatch%20logo%20(1).gif?raw=true" alt="FireWatch Logo"/>
+</p>
 
 Policy-based wildfire prevention. Currently, we are in the process of building a predictive model using open-source data in California, combining multistage ML models. We hope to incorporate direct factors along with human factors, such as campgrounds, to effectively predict and manage wildfire resources. Version 1.0
 
