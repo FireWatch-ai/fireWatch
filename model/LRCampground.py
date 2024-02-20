@@ -34,7 +34,7 @@ wildfires_in_california_new = gpd.sjoin(wildfire_data_new_reprojected, californi
 print("Creating grid polygons ...")
 
 bbox = california_data.total_bounds
-cell_size = 5000
+cell_size = 50000
 rows = int((bbox[3] - bbox[1]) / cell_size)
 cols = int((bbox[2] - bbox[0]) / cell_size)
 
@@ -111,7 +111,7 @@ fishnet['local_moran_wildfire'] = moran_loc_wildfire.Is
 
 print("Performing machine learning training ...")
 
-X = fishnet[['distance', 'temperature', 'local_moran_wildfire']].values
+X = fishnet[['distance','temperature','local_moran_wildfire']].values
 y = fishnet['probability']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05    , random_state=42)
@@ -135,14 +135,11 @@ print("Weights: ", model.coef_)
 print("Plotting ...")
 
 cmap = plt.get_cmap('inferno')
-# normalzie colors linearly from 0 to 1
 norm = plt.Normalize(vmin=np.min(fishnet['predicted_probability']), vmax=np.max(fishnet['predicted_probability']))
-
 
 colors = ['red' if not wildfires_in_california_new[wildfires_in_california_new.intersects(polygon)].empty else cmap(norm(probability))
           for polygon, probability in zip(grid_polygons, fishnet['predicted_probability'])]
 fishnet['color'] = colors
-
 
 fig, ax = plt.subplots(figsize=(10, 10))
 california_data.plot(ax=ax, color='lightgrey', edgecolor='black', linewidth=1.5, alpha=1, zorder=1)

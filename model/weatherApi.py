@@ -32,7 +32,7 @@ class temp:
         api_key = "9352563de1bf43599ca193930230308"
         latitude = self.x
         longitude = self.y
-        date = "2023-08-07"
+        date = "2023-08-25"
 
         weather_data = self.get_historical_weather(api_key, latitude, longitude, date)
 
