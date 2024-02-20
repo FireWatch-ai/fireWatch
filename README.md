@@ -1,10 +1,10 @@
 # FireWatch
 
-Policy-based wildfire prevention. Currently, we are in the process of building a predictive model using open-source data in California, combining multistage ML models. We hope to incorporate direct factors along with human factors, such as campgrounds, to effectively predict and manage wildfire resources. Version 1.0
-
 <p align="center">
-  <img src="https://github.com/blueishfiend692/fireWatch/blob/master/images/assets/fireWatchLogo.gif" />
+  <img src="https://github.com/blueishfiend692/fireWatch/blob/master/images/fireWatch%20logo%20(1).gif?raw=true" alt="FireWatch Logo" width="400"/>
 </p>
+
+Policy-based wildfire prevention. Currently, we are in the process of building a predictive model using open-source data in California, combining multistage ML models. We hope to incorporate direct factors along with human factors, such as campgrounds, to effectively predict and manage wildfire resources. Version 1.0
 
 # Initial fire plotting
 
@@ -16,7 +16,7 @@ Here is the initial plotting of wildfires in California, alongside a Gaussian di
 
 # Factors mapping
 
-Right now, we are building the model using 2 factors: 1 direct (temperature) and 1 neighboring (campgrounds).
+Right now, we are building the model using 2 factors: 1 direct (temperature) and 1 neighbouring (campgrounds).
 
 To obtain temperature data, we check the center of each grid cell and call on the weather API.
 ```
@@ -77,6 +77,6 @@ Here is the Moran overlayed with 2023 wildfires after training.
 
 # Training
 
-Using the kNN distance, logistic regression on temperature combined with the local Moran, a heatmap can be generated overlaying 2023 wildfires (not trained on) - achieving 65% accuracy on a 25000 square kilometer cell size.
+Using the kNN distance, logistic regression on temperature combined with the local Moran, a heatmap can be generated overlaying 2023 wildfires (not trained on) - achieving 74% accuracy on a 25000 square kilometer cell size.
 
 ![](https://github.com/blueishfiend692/fireWatch/blob/master/images/V1.0TempCampground%26Moran%4065%25-5000px.png)
