@@ -1,3 +1,2 @@
-
-/model/*
-/R/*
+*.pyc
+/__pycache__/* 
