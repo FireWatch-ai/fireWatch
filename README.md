@@ -8,6 +8,10 @@ Policy-based wildfire prevention. $10k pre-seed from Renewal funds, InvestEco an
 
 Currently, we are in the process of building a predictive model using open-source data in California, combining multistage ML models. We hope to incorporate direct factors along with human factors, such as campgrounds, to effectively predict and manage wildfire resources. Version 1.0
 
+More links
+- [YIC Video Submission](https://youtu.be/tur3Y5jWGFs)
+- [Peel Media Article](https://www.sharethesmile.ca/news/students-create-ai-application-to-help-mitigate-wildfires-1701203901076)
+
 # Initial fire plotting
 
 Here is the initial plotting of wildfires in California, alongside a Gaussian distribution to create a probability, P, where 0 < P < 1.
